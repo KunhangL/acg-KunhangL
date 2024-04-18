@@ -65,6 +65,9 @@ void draw_polygon(
         float p1x = polygon_xy[i1_vtx * 2 + 0] - x;
         float p1y = polygon_xy[i1_vtx * 2 + 1] - y;
         // write a few lines of code to compute winding number (hint: use atan2)
+        float sin_theta = (p0x * p1y - p1x * p0y) / (sqrt(p0x * p0x + p0y * p0y) * sqrt(p1x * p1x + p1y * p1y));
+        float cos_theta = (p0x * p1x + p0y * p1y) / (sqrt(p0x * p0x + p0y * p0y) * sqrt(p1x * p1x + p1y * p1y));
+        winding_number += - atan2(sin_theta, cos_theta) / (2 * M_PI);
       }
       const int int_winding_number = int(std::round(winding_number));
       if (int_winding_number == 1 ) { // if (x,y) is inside the polygon
@@ -91,6 +94,48 @@ void dda_line(
   auto dx = x1 - x0;
   auto dy = y1 - y0;
   // write some code below to paint pixel on the line with color `brightness`
+  if (dx == 0) {
+    if (dy > 0) {
+      for (int istep = 0; istep < dy; ++istep) {
+        img_data[x0 + (y0 + istep) * width] = brightness;
+      }
+    } else {
+      for (int istep = 0; istep > dy; --istep) {
+        img_data[x0 + (y0 + istep) * width] = brightness;
+      }
+    }
+  } else {
+    float slope = dy / dx;
+    if (abs(slope) < 1) {
+      if (dx > 0) {
+        for (int istep = 0; istep < dx; ++istep) {
+          float painted_x = x0 + istep;
+          float painted_y = y0 + istep * slope;
+          img_data[painted_x + int(round(painted_y)) * width] = brightness;
+        }
+      } else {
+        for (int istep = 0; istep > dx; --istep) {
+          float painted_x = x0 + istep;
+          float painted_y = y0 - istep * slope;
+          img_data[painted_x + int(round(painted_y)) * width] = brightness;
+        }
+      }
+    } else {
+      if (dy > 0) {
+        for (int istep = 0; istep < dy; ++istep) {
+          float painted_y = y0 + istep;
+          float painted_x = x0 + istep / slope;
+          img_data[int(round(painted_x)) + int(round(painted_y)) * width] = brightness;
+        }
+      } else {
+        for (int istep = 0; istep > dy; --istep) {
+          float painted_y = y0 + istep;
+          float painted_x = x0 - istep / slope;
+          img_data[int(round(painted_x)) + int(round(painted_y)) * width] = brightness;
+        }
+      }
+    }
+  }
 }
 
 int main() {
