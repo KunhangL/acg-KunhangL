@@ -115,13 +115,13 @@ void dda_line(
         for (int istep = 0; istep < dx; ++istep) {
           float painted_x = x0 + istep;
           float painted_y = y0 + istep * slope;
-          img_data[painted_x + int(round(painted_y)) * width] = brightness;
+          img_data[painted_x + int(floor(painted_y)) * width] = brightness;
         }
       } else {
         for (int istep = 0; istep > dx; --istep) {
           float painted_x = x0 + istep;
           float painted_y = y0 - istep * slope;
-          img_data[painted_x + int(round(painted_y)) * width] = brightness;
+          img_data[painted_x + int(floor(painted_y)) * width] = brightness;
         }
       }
     } else {
@@ -129,13 +129,13 @@ void dda_line(
         for (int istep = 0; istep < dy; ++istep) {
           float painted_y = y0 + istep;
           float painted_x = x0 + istep / slope;
-          img_data[int(round(painted_x)) + int(round(painted_y)) * width] = brightness;
+          img_data[int(floor(painted_x)) + int(floor(painted_y)) * width] = brightness;
         }
       } else {
         for (int istep = 0; istep > dy; --istep) {
           float painted_y = y0 + istep;
           float painted_x = x0 - istep / slope;
-          img_data[int(round(painted_x)) + int(round(painted_y)) * width] = brightness;
+          img_data[int(floor(painted_x)) + int(floor(painted_y)) * width] = brightness;
         }
       }
     }
