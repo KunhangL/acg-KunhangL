@@ -70,6 +70,42 @@ void draw_3d_triangle_with_texture(
       Eigen::Matrix4f coeff;
       Eigen::Vector4f rhs;
 
+      const float near_clipping_dist = 0.5;
+      const float far_clipping_dist = 4.0;
+      const float frustrum_near_size = 0.55;
+      Eigen::Matrix4f transform = Eigen::Matrix4f::Zero();
+      transform(0, 0) = near_clipping_dist / frustrum_near_size;
+      transform(1, 1) = near_clipping_dist / frustrum_near_size;
+      transform(2, 2) = (far_clipping_dist + near_clipping_dist) / (far_clipping_dist - near_clipping_dist);
+      transform(2, 3) = 2.f * far_clipping_dist * near_clipping_dist / (far_clipping_dist - near_clipping_dist);
+      transform(3, 2) = -1.f;
+      auto transform_inverse = transform.inverse();
+      auto a = transform_inverse * q0;
+      auto b = transform_inverse * q1;
+      auto c = transform_inverse * q2;
+
+      rhs = Eigen::Vector4f(0.f, 0.f, 0.f, 1.f);
+      coeff = Eigen::Matrix4f::Zero();
+      const auto f = near_clipping_dist / frustrum_near_size;
+      coeff(0, 0) = f * a[0];
+      coeff(0, 1) = f * b[0];
+      coeff(0, 2) = f * c[0];
+      coeff(0, 3) = -s[0];
+      coeff(1, 0) = f * a[1];
+      coeff(1, 1) = f * b[1];
+      coeff(1, 2) = f * c[1];
+      coeff(1, 3) = -s[1];
+      coeff(2, 0) = -a[2];
+      coeff(2, 1) = -b[2];
+      coeff(2, 2) = -c[2];
+      coeff(2, 3) = -1.f;
+      coeff(3, 0) = 1.f;
+      coeff(3, 1) = 1.f;
+      coeff(3, 2) = 1.f;
+      Eigen::Vector4f res = coeff.inverse() * rhs;
+      bc[0] = res[0];
+      bc[1] = res[1];
+      bc[2] = res[2];
       // do not change below
       auto uv = uv0 * bc[0] + uv1 * bc[1] + uv2 * bc[2]; // uv coordinate of the pixel
       // compute pixel coordinate of the texture
