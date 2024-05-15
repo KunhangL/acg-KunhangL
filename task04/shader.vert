@@ -27,6 +27,11 @@ void main()
         //x0 = ???
         //y0 = ???
         //z0 = ???
+
+        float l = sqrt((x0 - org[0]) * nrm[0] + (y0 - org[1]) * nrm[1] + (z0 - org[2]) * nrm[2]);
+        x0 = x0 - 2 * l * nrm[0] + 0.2;
+        y0 = y0 - 2 * l * nrm[1];
+        z0 = z0 - 2 * l * nrm[2] + 0.8;
     }
     // do not edit below
 
